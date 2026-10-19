@@ -1,0 +1,15 @@
+(() => {
+ const cfg=window.PANESH_CONFIG||{};
+ const errorEl=document.getElementById('login-error')||document.getElementById('signup-error');
+ const show=(msg)=>{if(errorEl)errorEl.textContent=msg;else alert(msg);};
+ const supabase=window.supabase?.createClient?.(cfg.SUPABASE_URL||'',cfg.SUPABASE_PUBLISHABLE_KEY||'');
+ const apiReady=()=>{if(!cfg.SUPABASE_URL||cfg.SUPABASE_URL.includes('YOUR_PROJECT')||!cfg.SUPABASE_PUBLISHABLE_KEY||cfg.SUPABASE_PUBLISHABLE_KEY.startsWith('YOUR_')){show('Authentication setup is incomplete. Configure app-config.js with your Supabase project URL and public key.');return false;}return !!supabase;};
+ const google=document.createElement('button');google.type='button';google.className='btn btn-secondary full-width';google.textContent='Continue with Google';google.style.marginTop='12px';
+ const form=document.querySelector('.auth-form');if(form)form.appendChild(google);
+ google.addEventListener('click',async()=>{if(!apiReady())return;google.disabled=true;try{const {error}=await supabase.auth.signInWithOAuth({provider:'google',options:{redirectTo:new URL('home.html',location.href).href}});if(error)throw error;}catch(e){show(e.message||'Google sign-in failed.');google.disabled=false;}});
+ const login=document.getElementById('login-form');
+ if(login)login.addEventListener('submit',async e=>{e.preventDefault();if(!apiReady())return;const button=login.querySelector('[type=submit]');button.disabled=true;show('');try{const {data,error}=await supabase.auth.signInWithPassword({email:document.getElementById('email').value.trim(),password:document.getElementById('password').value});if(error)throw error;window.location.href='home.html';}catch(err){show(err.message||'Login failed.');button.disabled=false;}});
+ const signup=document.getElementById('signup-form');
+ if(signup)signup.addEventListener('submit',async e=>{e.preventDefault();if(!apiReady())return;const button=signup.querySelector('[type=submit]');button.disabled=true;show('');const name=document.getElementById('fullname').value.trim(),email=document.getElementById('email').value.trim(),password=document.getElementById('password').value,confirm=document.getElementById('confirm-password').value;if(password!==confirm){show('Passwords do not match.');button.disabled=false;return;}if(password.length<8){show('Use a password with at least 8 characters.');button.disabled=false;return;}try{const {data,error}=await supabase.auth.signUp({email,password,options:{data:{full_name:name},emailRedirectTo:new URL('login.html',location.href).href}});if(error)throw error;if(data.session)window.location.href='home.html';else show('Account created. Check your email to confirm your address, then sign in.');}catch(err){show(err.message||'Sign-up failed.');}finally{button.disabled=false;}});
+ window.PaneshAuth=Object.freeze({getClient:()=>supabase,getSession:async()=>supabase?.auth.getSession(),getAccessToken:async()=>{const {data}=await supabase.auth.getSession();return data.session?.access_token||null;},signOut:async()=>{if(supabase)await supabase.auth.signOut();location.href='home.html';}});
+})();

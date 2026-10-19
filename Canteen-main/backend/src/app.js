@@ -1,0 +1,27 @@
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import crypto from 'node:crypto';
+import { env } from './config/env.js';
+import { menuRouter } from './routes/menu.js';
+import { ordersRouter } from './routes/orders.js';
+import { paymentsRouter, razorpayWebhook } from './routes/payments.js';
+import { adminRouter } from './routes/admin.js';
+import { notFound,errorHandler } from './middleware/errors.js';
+const app=express();
+app.disable('x-powered-by');
+app.use(helmet());
+app.use(cors({origin:env.FRONTEND_ORIGIN.split(',').map(x=>x.trim()),methods:['GET','POST','PATCH','PUT','DELETE','OPTIONS'],allowedHeaders:['Content-Type','Authorization','Idempotency-Key'],credentials:false}));
+app.use((req,res,next)=>{req.id=crypto.randomUUID();res.setHeader('X-Request-Id',req.id);next();});
+// Razorpay signatures require the exact raw body. Register this route before express.json().
+app.post('/api/v1/webhooks/razorpay',express.raw({type:'application/json',limit:'1mb'}),razorpayWebhook);
+app.use(express.json({limit:'1mb'}));
+app.use('/api/v1/auth-sensitive',rateLimit({windowMs:15*60*1000,limit:40,standardHeaders:true,legacyHeaders:false}));
+app.get('/api/health',(req,res)=>res.json({ok:true,data:{service:'panesh-kitchen-api',status:'healthy',time:new Date().toISOString()}}));
+app.use('/api/v1/menu',menuRouter);
+app.use('/api/v1/orders',ordersRouter);
+app.use('/api/v1/payments',paymentsRouter);
+app.use('/api/v1/admin',adminRouter);
+app.use(notFound);app.use(errorHandler);
+export default app;

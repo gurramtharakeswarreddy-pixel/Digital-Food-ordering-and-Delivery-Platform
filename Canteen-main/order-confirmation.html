@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>Order Confirmation - The Panesh Kitchen</title>
+  <link rel="icon" href="images/logo1.png"> 
+  <!-- Poppins + Tapestry fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Tapestry&display=swap" rel="stylesheet">
+  
+  <!-- PDF Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  
+  <style>
+    /* ---------- CUSTOM LOGO STYLES ---------- */
+    .custom-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      cursor: pointer;
+    }
+    .logo-icon {
+      position: relative;
+      width: 55px;
+      height: 55px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logo-ring {
+      position: absolute;
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      border: 2.5px solid var(--brand);
+      animation: logoGlow 2s infinite alternate;
+    }
+    .logo-circle {
+      position: absolute;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--brand-grad);
+      animation: logoPulse 2s infinite;
+    }
+    .logo-dot {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: white;
+      opacity: 0.95;
+    }
+    .logo-text-section {
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+    }
+    .logo-main-text {
+      font-family: 'Poppins', 'Georgia', serif;
+      font-size: 20px;
+      font-weight: 800;
+      background: var(--brand-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      line-height: 1.2;
+    }
+    .logo-tagline {
+      font-family: 'Poppins', 'Arial', sans-serif;
+      font-size: 9px;
+      letter-spacing: 3px;
+      font-weight: 600;
+      color: var(--brand);
+      margin-top: 2px;
+    }
+    @keyframes logoGlow {
+      0% { box-shadow: 0 0 2px rgba(37, 99, 235, 0.3); border-color: var(--brand); }
+      100% { box-shadow: 0 0 16px rgba(6, 182, 212, 0.5); border-color: #06B6D4; }
+    }
+    @keyframes logoPulse {
+      0% { transform: scale(1); opacity: 0.9; }
+      50% { transform: scale(1.08); opacity: 1; }
+      100% { transform: scale(1); opacity: 0.9; }
+    }
+
+    /* ---------- GLOBAL & VARIABLES ---------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --brand: #2563EB;
+      --brand-dark: #1D4ED8;
+      --brand-light: rgba(37, 99, 235, 0.10);
+      --brand-glow: rgba(37, 99, 235, 0.28);
+      --brand-grad: linear-gradient(135deg, #2563EB 0%, #06B6D4 100%);
+      --heading-1: #0F172A;
+      --heading-2: #1E293B;
+      --heading-3: #334155;
+      --heading-gradient: linear-gradient(135deg, #1E3A5F 0%, #2563EB 50%, #06B6D4 100%);
+      --bg: #f9f7f4;
+      --surface: #ffffff;
+      --surface2: #f2f0ed;
+      --dark: #18171a;
+      --muted: #6b6a70;
+      --subtle: #b0adb8;
+      --border: #e8e5e0;
+      --danger: #ef4444;
+      --green: #22c55e;
+      --blue: #3b82f6;
+      --r-sm: 8px; --r: 12px; --r-lg: 18px; --r-xl: 22px; --r-full: 999px;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,.06);
+      --shadow: 0 8px 28px rgba(0,0,0,.09);
+      --shadow-lg: 0 20px 50px rgba(0,0,0,.13);
+      --shadow-brand: 0 10px 32px rgba(37, 99, 235, .32);
+      --font-head: 'Poppins', 'Syne', sans-serif;
+      --font-body: 'Poppins', 'DM Sans', sans-serif;
+      --font-tapestry: 'Tapestry', cursive;
+      --dur: 220ms; --ease: cubic-bezier(.25,.8,.25,1); --spring: cubic-bezier(.34,1.56,.64,1);
+      
+      --card: #ffffff;
+      --green-bg: rgba(34, 197, 94, 0.1);
+      --blue-bg: rgba(59, 130, 246, 0.1);
+      --teal: #06B6D4;
+      --teal-light: rgba(6, 182, 212, 0.1);
+    }
+
+    [data-theme="dark"] {
+      --bg: #0f0e11;
+      --surface: #1a1920;
+      --surface2: #141318;
+      --dark: #f0eef8;
+      --muted: #8f8d9a;
+      --subtle: #55535f;
+      --border: #2a2830;
+      --heading-1: #F1F5F9;
+      --heading-2: #E2E8F0;
+      --heading-3: #CBD5E1;
+      --card: #1a1920;
+      --green-bg: rgba(34, 197, 94, 0.15);
+      --blue-bg: rgba(59, 130, 246, 0.15);
+      --teal-light: rgba(6, 182, 212, 0.15);
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--dark);
+      transition: background 0.2s, color 0.2s;
+      min-height: 100vh;
+    }
+
+    .tapestry-regular {
+      font-family: var(--font-tapestry);
+      font-weight: 400;
+      font-style: normal;
+    }
+
+    .confirm-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(ellipse 800px 400px at top center, rgba(37, 99, 235, 0.08), transparent), var(--bg);
+      padding: 20px;
+    }
+
+    .confirm-card {
+      max-width: 650px;
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      padding: 40px 32px;
+      box-shadow: var(--shadow-lg);
+      animation: slideUp 0.5s var(--ease) both;
+      position: relative;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .success-icon {
+      font-size: 72px;
+      margin-bottom: 16px;
+      animation: bounce 0.6s var(--spring) both 0.2s;
+      background: var(--brand-light);
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      box-shadow: 0 0 0 8px var(--brand-light);
+    }
+
+    @keyframes bounce {
+      from { transform: scale(0.5); opacity: 0; }
+      60% { transform: scale(1.2); }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .confirm-card h1 {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      background: var(--brand-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-align: center;
+      font-family: var(--font-head);
+    }
+
+    .confirm-card > p {
+      color: var(--muted);
+      margin-top: 8px;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .confirm-details {
+      margin: 24px 0;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      font-size: 14px;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+
+    .detail-label {
+      font-weight: 600;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .detail-value {
+      font-weight: 700;
+      color: var(--dark);
+    }
+
+    .detail-value.highlight {
+      background: var(--brand-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-size: 20px;
+    }
+
+    .payment-method-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 30px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .payment-method-badge.upi {
+      background: var(--brand-light);
+      color: var(--brand);
+    }
+
+    .payment-method-badge.cash {
+      background: var(--green-bg);
+      color: var(--green);
+    }
+
+    [data-theme="dark"] .payment-method-badge.cash { color: #34d399; }
+    [data-theme="dark"] .payment-method-badge.upi { color: #60a5fa; }
+
+    .order-items {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      font-size: 13px;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .order-item:last-child { border-bottom: none; }
+    .order-item-name { font-weight: 500; color: var(--heading-2); }
+    .order-item-price { font-weight: 700; color: var(--brand); }
+
+    /* Status Tracker */
+    .status-tracker {
+      margin: 20px 0;
+      padding: 20px;
+      background: var(--card);
+      border-radius: 20px;
+      border: 1px solid var(--border);
+    }
+    .status-steps {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      margin: 20px 0 30px;
+    }
+    .status-steps::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: 10%;
+      right: 10%;
+      height: 3px;
+      background: var(--border);
+      z-index: 0;
+    }
+    .step {
+      text-align: center;
+      position: relative;
+      z-index: 1;
+      flex: 1;
+      cursor: pointer;
+    }
+    .step-icon {
+      width: 44px;
+      height: 44px;
+      background: var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 10px;
+      font-size: 20px;
+      transition: all 0.3s var(--ease);
+    }
+    .step.active .step-icon {
+      background: var(--brand-grad);
+      color: white;
+      box-shadow: 0 0 0 4px var(--brand-light);
+      transform: scale(1.1);
+    }
+    .step.completed .step-icon {
+      background: var(--green);
+      color: white;
+    }
+    .step-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .step.active .step-label { color: var(--brand); font-weight: 700; }
+    .step.completed .step-label { color: var(--green); }
+
+    /* Countdown Timer */
+    .countdown {
+      background: var(--heading-gradient);
+      border-radius: 16px;
+      padding: 20px;
+      margin-top: 16px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .countdown::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 30% 50%, rgba(6, 182, 212, 0.2), transparent);
+      pointer-events: none;
+    }
+    [data-theme="dark"] .countdown {
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+    }
+    .countdown p {
+      color: #94a3b8;
+      font-size: 12px;
+      margin-bottom: 8px;
+      position: relative;
+      z-index: 1;
+    }
+    .countdown-timer {
+      font-size: 36px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #06B6D4, #3B82F6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-family: monospace;
+      letter-spacing: 2px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Rewards Banner */
+    .rewards-banner {
+      background: linear-gradient(135deg, #dbeafe, #e0f2fe);
+      border: 1px solid #93c5fd;
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin: 16px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    [data-theme="dark"] .rewards-banner {
+      background: linear-gradient(135deg, #1e3a8a, #1e40af);
+      border-color: #3b82f6;
+    }
+    .rewards-text {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+    }
+    .rewards-text span:first-child { font-size: 28px; }
+    .rewards-text strong { color: var(--brand); }
+    [data-theme="dark"] .rewards-text strong { color: #60a5fa; }
+
+    .coupon-code {
+      background: white;
+      padding: 6px 12px;
+      border-radius: 30px;
+      font-family: monospace;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      transition: all 0.2s var(--ease);
+      border: 2px solid var(--brand);
+      color: var(--brand);
+    }
+    .coupon-code:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px var(--brand-glow);
+    }
+    [data-theme="dark"] .coupon-code {
+      background: #1e1e2a;
+      color: #60a5fa;
+      border-color: #3b82f6;
+    }
+
+    /* Payment Sections */
+    .payment-section {
+      margin-top: 16px;
+      padding: 16px;
+      background: var(--brand-light);
+      border: 1px solid var(--brand);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .payment-section.cash-section {
+      background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+      border: 1px solid #86efac;
+    }
+    [data-theme="dark"] .payment-section { background: rgba(37, 99, 235, 0.15); border-color: var(--brand); }
+    [data-theme="dark"] .payment-section.cash-section {
+      background: linear-gradient(135deg, #064e3b, #065f46);
+      border: 1px solid #059669;
+    }
+    .payment-section.cash-section .payment-info p { color: #065f46; }
+    [data-theme="dark"] .payment-section.cash-section .payment-info p { color: #a7f3d0; }
+    .payment-section.cash-section .payment-info p strong { color: #065f46; }
+    [data-theme="dark"] .payment-section.cash-section .payment-info p strong { color: #6ee7b7; }
+    .payment-info p { margin: 4px 0; font-size: 12px; }
+
+    .qr-placeholder {
+      width: 120px;
+      height: 120px;
+      background: linear-gradient(135deg, #fff, #f0f9ff);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      border: 2px dashed var(--brand);
+    }
+    [data-theme="dark"] .qr-placeholder { background: linear-gradient(135deg, #1e1e2a, #1e3a8a); }
+
+    .copy-btn {
+      background: var(--brand-grad);
+      color: white;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s var(--ease);
+      box-shadow: 0 4px 12px var(--brand-glow);
+    }
+    .copy-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-brand); }
+
+    /* Action Grid */
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin: 20px 0;
+    }
+    .action-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s var(--ease);
+    }
+    .action-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--brand);
+      box-shadow: 0 8px 20px var(--brand-glow);
+    }
+    .action-card .emoji { font-size: 24px; margin-bottom: 6px; display: block; }
+    .action-card span { font-size: 12px; font-weight: 600; color: var(--heading-2); }
+
+    /* Rating Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s var(--ease);
+      backdrop-filter: blur(4px);
+    }
+    .modal-overlay.show { opacity: 1; visibility: visible; }
+    .modal-content {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 24px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      border: 1px solid var(--border);
+      animation: slideUp 0.3s var(--ease) both;
+    }
+    .modal-content h3 {
+      font-size: 22px;
+      margin-bottom: 16px;
+      color: var(--heading-1);
+      font-family: var(--font-head);
+      background: var(--heading-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .star-rating {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin: 16px 0;
+    }
+    .star {
+      font-size: 36px;
+      cursor: pointer;
+      color: var(--border);
+      transition: all 0.2s var(--ease);
+    }
+    .star:hover { transform: scale(1.1); color: #fbbf24; }
+    .star.selected { color: #fbbf24; }
+    .review-input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--dark);
+      margin: 12px 0;
+      resize: none;
+      font-family: var(--font-body);
+      transition: border-color 0.2s var(--ease);
+    }
+    .review-input:focus {
+      outline: none;
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px var(--brand-light);
+    }
+
+    /* Buttons */
+    .confirm-actions {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 8px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 14px;
+      padding: 12px 24px;
+      border-radius: var(--r-full);
+      transition: all 0.2s var(--spring);
+      text-decoration: none;
+      font-family: var(--font-body);
+    }
+    .btn-primary {
+      background: var(--brand-grad);
+      color: #fff;
+      box-shadow: var(--shadow-brand);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px var(--brand-glow); }
+    .btn-secondary {
+      background: var(--heading-1);
+      color: #fff;
+    }
+    .btn-secondary:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--dark);
+    }
+    .btn-outline:hover {
+      border-color: var(--brand);
+      color: var(--brand);
+      background: var(--brand-light);
+    }
+
+    .toast-msg {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--heading-1);
+      color: white;
+      padding: 12px 24px;
+      border-radius: var(--r-full);
+      font-size: 13px;
+      font-weight: 600;
+      opacity: 0;
+      transition: all 0.25s var(--ease);
+      z-index: 1000;
+      pointer-events: none;
+      box-shadow: var(--shadow-lg);
+    }
+    .toast-msg.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    .privacy-notice {
+      text-align: center;
+      font-size: 10px;
+      color: var(--muted);
+      margin: 16px 0;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+
+    @media print {
+      .action-grid, .payment-section, .confirm-actions, .rewards-banner, .status-tracker, .copy-btn, .privacy-notice {
+        display: none !important;
+      }
+      .confirm-card { box-shadow: none; padding: 20px; }
+      body { background: white; }
+    }
+
+    @media (max-width: 480px) {
+      .confirm-card { padding: 24px 16px; }
+      .confirm-card h1 { font-size: 26px; }
+      .confirm-actions { flex-direction: column; }
+      .btn { width: 100%; }
+      .action-grid { grid-template-columns: repeat(2, 1fr); }
+      .status-steps::before { left: 5%; right: 5%; }
+      .step-icon { width: 36px; height: 36px; font-size: 16px; }
+      .step-label { font-size: 9px; }
+      .countdown-timer { font-size: 28px; }
+      .qr-placeholder { width: 100px; height: 100px; font-size: 36px; }
+      .payment-section { justify-content: center; }
+    }
+  </style>
+</head>
+<body class="confirm-page">
+  <div class="confirm-card" id="invoice-content">
+    <!-- Custom Animated Logo -->
+    <div class="custom-logo" onclick="window.location.href='home.html'">
+      <div class="logo-icon">
+        <div class="logo-ring"></div>
+        <div class="logo-circle"></div>
+        <div class="logo-dot"></div>
+        <div class="logo-line-left"></div>
+        <div class="logo-line-right"></div>
+        <div class="logo-line-top"></div>
+      </div>
+      <div class="logo-text-section">
+        <span class="logo-main-text">The Panesh Kitchen</span>
+        <span class="logo-tagline">Authentic Indian Taste</span>
+      </div>
+    </div>
+
+    <div class="success-icon" id="successIcon">✅</div>
+    <h1 id="mainTitle" class="tapestry-regular">Order Confirmed! 🎉</h1>
+    <p id="subText">Thank you for ordering with Modern Canteen</p>
+
+    <div class="confirm-details">
+      <div class="detail-row">
+        <span class="detail-label">📦 Order ID</span>
+        <span class="detail-value" id="order-id">Loading...</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">📅 Order Time</span>
+        <span class="detail-value" id="order-time">-</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">📞 Customer</span>
+        <span class="detail-value" id="customer-name">Guest</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">💳 Payment Method</span>
+        <span class="detail-value">
+          <span class="payment-method-badge" id="payment-method">-</span>
+        </span>
+      </div>
+      <div class="order-items" id="order-items"></div>
+      <div class="detail-row">
+        <span class="detail-label">💰 Subtotal</span>
+        <span class="detail-value" id="order-subtotal">₹0</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">📋 GST (5%)</span>
+        <span class="detail-value" id="order-tax">₹0</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">🛎️ Service Charge</span>
+        <span class="detail-value" id="order-service">₹10</span>
+      </div>
+      <div class="detail-row" id="promo-row" style="display:none;">
+        <span class="detail-label">🏷️ Promo Discount</span>
+        <span class="detail-value" id="promo-discount" style="color: var(--green);">-</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">💵 Total Amount</span>
+        <span class="detail-value highlight" id="order-total">₹0</span>
+      </div>
+    </div>
+
+    <div class="status-tracker">
+      <div class="status-steps" id="status-steps">
+        <div class="step completed" data-step="0">
+          <div class="step-icon">✅</div>
+          <div class="step-label">Ordered</div>
+        </div>
+        <div class="step" data-step="1">
+          <div class="step-icon">👨‍🍳</div>
+          <div class="step-label">Preparing</div>
+        </div>
+        <div class="step" data-step="2">
+          <div class="step-icon">🚗</div>
+          <div class="step-label">Ready</div>
+        </div>
+        <div class="step" data-step="3">
+          <div class="step-icon">🎯</div>
+          <div class="step-label">Delivered</div>
+        </div>
+      </div>
+      <div class="countdown">
+        <p>⏰ Estimated Preparation Time</p>
+        <div class="countdown-timer" id="countdown-timer">25:00</div>
+        <p style="font-size: 11px; margin-top: 8px; opacity: 0.7;">Your order will be ready soon!</p>
+      </div>
+    </div>
+
+    <!-- UPI Payment Section -->
+    <div id="upi-payment-section" class="payment-section" style="display: none;">
+      <div class="payment-info">
+        <p><strong>📱 Scan QR to Pay</strong></p>
+        <p>UPI ID: <strong>9618231823@ybl</strong></p>
+        <p>Amount: ₹<span id="upi-amount">0</span></p>
+      </div>
+      <div class="qr-placeholder">
+        <span>📱 QR</span>
+      </div>
+      <button class="copy-btn" onclick="copyUPI()">📋 Copy UPI ID</button>
+    </div>
+
+    <!-- Cash Payment Section -->
+    <div id="cash-payment-section" class="payment-section cash-section" style="display: none;">
+      <div class="payment-info">
+        <p><strong>💵 Cash on Pickup</strong></p>
+        <p>Please pay ₹<span id="cash-amount">0</span> at the counter when you collect your order.</p>
+        <p style="font-size: 11px; margin-top: 4px;">✓ Keep exact change ready for faster service</p>
+      </div>
+    </div>
+
+    <div class="privacy-notice">
+      🔒 <strong>College Project - Demo Only</strong> | No real payment processed | Data stored locally in your browser
+    </div>
+
+    <div class="rewards-banner">
+      <div class="rewards-text">
+        <span>🎁</span>
+        <span>You earned <strong id="points-earned">50</strong> loyalty points!</span>
+      </div>
+      <div class="coupon-code" onclick="copyCoupon()">
+        🎟️ SAVE20 <span>📋</span>
+      </div>
+    </div>
+
+    <div class="action-grid">
+      <div class="action-card" onclick="downloadInvoice()">
+        <span class="emoji">📄</span>
+        <span>Download Invoice</span>
+      </div>
+      <div class="action-card" onclick="shareOrder()">
+        <span class="emoji">📱</span>
+        <span>Share Order</span>
+      </div>
+      <div class="action-card" onclick="reorder()">
+        <span class="emoji">🔄</span>
+        <span>Reorder Again</span>
+      </div>
+      <div class="action-card" onclick="openRatingModal()">
+        <span class="emoji">⭐</span>
+        <span>Rate & Review</span>
+      </div>
+      <div class="action-card" onclick="addToCalendar()">
+        <span class="emoji">📅</span>
+        <span>Add Reminder</span>
+      </div>
+      <div class="action-card" onclick="contactSupport()">
+        <span class="emoji">💬</span>
+        <span>Contact Support</span>
+      </div>
+    </div>
+
+    <div class="confirm-actions">
+      <button onclick="window.location.href='home.html'" class="btn btn-primary">
+        🍽️ Order More
+      </button>
+      <button onclick="window.location.href='cart.html'" class="btn btn-outline">
+        🛒 View Cart
+      </button>
+      <button onclick="logout()" class="btn btn-secondary">
+        🚪 Logout
+      </button>
+    </div>
+  </div>
+
+  <!-- Rating Modal -->
+  <div class="modal-overlay" id="rating-modal">
+    <div class="modal-content">
+      <h3 class="tapestry-regular">Rate Your Experience</h3>
+      <div class="star-rating" id="star-rating">
+        <span class="star" data-value="1">★</span>
+        <span class="star" data-value="2">★</span>
+        <span class="star" data-value="3">★</span>
+        <span class="star" data-value="4">★</span>
+        <span class="star" data-value="5">★</span>
+      </div>
+      <textarea class="review-input" id="review-text" placeholder="Share your feedback... (optional)" rows="3"></textarea>
+      <button class="btn btn-primary" onclick="submitReview()">Submit Review</button>
+      <button class="btn btn-outline" style="margin-top: 10px;" onclick="closeRatingModal()">Later</button>
+    </div>
+  </div>
+
+  <div class="toast-msg" id="toastMsg">Copied to clipboard! 📋</div>
+
+  <script>
+    let selectedRating = 0;
+    let orderData = null;
+    let countdownInterval = null;
+    const urlParams = new URLSearchParams(window.location.search);
+    let orderId = urlParams.get('id');
+
+    function showToast(msg) {
+      const toast = document.getElementById('toastMsg');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    function copyUPI() {
+      navigator.clipboard.writeText('9618231823@ybl');
+      showToast('✅ UPI ID copied! Open your UPI app and pay to this ID');
+    }
+
+    function copyCoupon() {
+      navigator.clipboard.writeText('SAVE20');
+      showToast('🎟️ Coupon SAVE20 copied!');
+    }
+
+    function updateStatusStep(stepIndex) {
+      const steps = document.querySelectorAll('.step');
+      steps.forEach((step, idx) => {
+        if (idx < stepIndex) {
+          step.classList.add('completed');
+          step.classList.remove('active');
+        } else if (idx === stepIndex) {
+          step.classList.add('active');
+          step.classList.remove('completed');
+        } else {
+          step.classList.remove('completed', 'active');
+        }
+      });
+    }
+
+    function startCountdown(minutes) {
+      if (countdownInterval) clearInterval(countdownInterval);
+      let time = minutes * 60;
+      const timerElement = document.getElementById('countdown-timer');
+      countdownInterval = setInterval(() => {
+        const mins = Math.floor(time / 60);
+        const secs = time % 60;
+        timerElement.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        if (time <= 0) {
+          clearInterval(countdownInterval);
+          timerElement.textContent = 'Ready! 🎉';
+          timerElement.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
+          timerElement.style.webkitBackgroundClip = 'text';
+          timerElement.style.backgroundClip = 'text';
+          updateStatusStep(2);
+          showToast('🎉 Your order is ready for pickup!');
+        } else if (time === 600) {
+          updateStatusStep(1);
+        }
+        time--;
+      }, 1000);
+    }
+
+    function downloadInvoice() {
+      const element = document.getElementById('invoice-content');
+      const opt = {
+        margin: 0.5,
+        filename: `Order_${orderId}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(element).save();
+      showToast('📄 Invoice downloaded!');
+    }
+
+    function shareOrder() {
+      if (navigator.share) {
+        navigator.share({
+          title: 'My Order',
+          text: `Order ID: ${orderId}`,
+          url: window.location.href
+        }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(window.location.href);
+        showToast('📋 Order link copied!');
+      }
+    }
+
+    function reorder() {
+      window.location.href = 'home.html';
+      showToast('🔄 Add items to cart from menu');
+    }
+
+    function openRatingModal() {
+      document.getElementById('rating-modal').classList.add('show');
+    }
+
+    function closeRatingModal() {
+      document.getElementById('rating-modal').classList.remove('show');
+    }
+
+    document.querySelectorAll('.star').forEach(star => {
+      star.addEventListener('click', () => {
+        selectedRating = parseInt(star.dataset.value);
+        document.querySelectorAll('.star').forEach(s => {
+          s.classList.toggle('selected', parseInt(s.dataset.value) <= selectedRating);
+        });
+      });
+    });
+
+    function submitReview() {
+      const review = document.getElementById('review-text').value;
+      if (selectedRating > 0) {
+        const reviews = JSON.parse(localStorage.getItem('order_reviews') || '[]');
+        reviews.unshift({
+          orderId,
+          rating: selectedRating,
+          review,
+          date: new Date().toLocaleString()
+        });
+        localStorage.setItem('order_reviews', JSON.stringify(reviews));
+        showToast(`⭐ Thanks for rating ${selectedRating} stars!`);
+        closeRatingModal();
+      } else {
+        showToast('Please select a rating');
+      }
+    }
+
+    function addToCalendar() {
+      const readyTime = new Date();
+      readyTime.setMinutes(readyTime.getMinutes() + 25);
+      const formatDate = (date) => date.toISOString().replace(/-|:|\./g, '').split('.')[0] + 'Z';
+      const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=Pickup+Order+${orderId}&dates=${formatDate(readyTime)}/${formatDate(readyTime)}&details=Order+ready+for+pickup+at+Modern+Canteen`;
+      window.open(url, '_blank');
+      showToast('📅 Opening calendar...');
+    }
+
+    function contactSupport() {
+      window.location.href = 'tel:+911234567890';
+      showToast('📞 Calling support...');
+    }
+
+    function logout() {
+      if (confirm('Are you sure you want to logout?')) {
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('userEmail');
+        window.location.href = 'login.html';
+      }
+    }
+
+    function initTheme() {
+      const saved = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', saved);
+    }
+
+    if (orderId) {
+      const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        orderData = order;
+        const subtotal = order.subtotal || 0;
+        const gst = order.tax || Math.round(subtotal * 0.05);
+        const service = order.service || 10;
+        const total = order.total || (subtotal + gst + service);
+
+        document.getElementById('order-id').innerText = order.id;
+        document.getElementById('order-time').innerText = order.time || new Date().toLocaleTimeString();
+        document.getElementById('customer-name').innerText = order.customerName || localStorage.getItem('currentUser') || 'Guest';
+        document.getElementById('order-subtotal').innerHTML = '₹' + subtotal;
+        document.getElementById('order-tax').innerHTML = '₹' + gst;
+        document.getElementById('order-service').innerHTML = '₹' + service;
+        document.getElementById('order-total').innerHTML = '₹' + total;
+        document.getElementById('cash-amount').innerHTML = total;
+        document.getElementById('upi-amount').innerHTML = total;
+        document.getElementById('points-earned').innerHTML = Math.floor(total / 10) || 50;
+
+        const itemsContainer = document.getElementById('order-items');
+        if (order.items && order.items.length > 0) {
+          let itemsHtml = '<div class="detail-label" style="margin-bottom: 8px;">🍔 Order Items</div>';
+          order.items.forEach(item => {
+            const itemName = item.name || 'Food Item';
+            const itemQty = item.qty || 1;
+            const itemPrice = item.price || 0;
+            itemsHtml += `<div class="order-item">
+              <div class="order-item-name">${itemName} <span style="color: var(--muted);">×${itemQty}</span></div>
+              <div class="order-item-price">₹${itemPrice * itemQty}</div>
+            </div>`;
+          });
+          itemsContainer.innerHTML = itemsHtml;
+        }
+
+        const paymentMethod = order.paymentMethod || 'UPI';
+        const paymentSpan = document.getElementById('payment-method');
+        const upiSection = document.getElementById('upi-payment-section');
+        const cashSection = document.getElementById('cash-payment-section');
+        const successIcon = document.getElementById('successIcon');
+        const mainTitle = document.getElementById('mainTitle');
+        const subText = document.getElementById('subText');
+
+        if (paymentMethod === 'Cash') {
+          paymentSpan.innerHTML = '💵 Cash on Pickup';
+          paymentSpan.className = 'payment-method-badge cash';
+          upiSection.style.display = 'none';
+          cashSection.style.display = 'flex';
+          successIcon.innerHTML = '💵';
+          mainTitle.innerHTML = 'Order Placed! 🎉';
+          subText.innerHTML = 'Please pay at the counter when you pick up your order';
+        } else {
+          paymentSpan.innerHTML = '📱 UPI / Bank Transfer';
+          paymentSpan.className = 'payment-method-badge upi';
+          upiSection.style.display = 'flex';
+          cashSection.style.display = 'none';
+          successIcon.innerHTML = '✅';
+          mainTitle.innerHTML = 'Order Confirmed! 🎉';
+          subText.innerHTML = 'Scan QR or copy UPI ID to complete payment';
+        }
+        startCountdown(25);
+      } else {
+        startCountdown(25);
+      }
+    } else {
+      startCountdown(25);
+    }
+    initTheme();
+  </script>
+  <script src="app-config.js"></script>
+  <script src="panesh-api.js"></script>
+</body>
+</html>
