@@ -1,5 +1,5 @@
 [README.md](https://github.com/user-attachments/files/33674516/README.md)
-# The Panesh Kitchen — full-stack integration
+# Digital Food ordering and Delivery Platform — full-stack integration
 
 This repository preserves the supplied static HTML/CSS/JavaScript frontend and adds a Node.js/Express API, Supabase schema/RLS, Razorpay Test Mode plumbing, PDF/QR receipt services, and optional Resend email delivery.
 
